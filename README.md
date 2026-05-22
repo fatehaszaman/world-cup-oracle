@@ -233,26 +233,30 @@ The model was backtested against the full 2022 FIFA World Cup in Qatar using 202
 
 | Stage      | Predicted correct | Max possible | Score    |
 |------------|-------------------|--------------|----------|
-| Round of 16 | 12/16             | 16 pts       | 12 pts   |
-| Quarter-finals | 6/8            | 16 pts       | 12 pts   |
-| Semi-finals | 3/4              | 12 pts       | 9 pts    |
-| Finalists  | 2/2               | 10 pts       | 10 pts   |
-| Winner     | ✓ Argentina       | 10 pts       | 10 pts   |
-| **Total BPS** | **—**          | **64 pts**   | **53/64** |
+| Round of 16 (×1pt)   | 12/16     | 16 pts       | 12 pts   |
+| Quarter-finals (×2pt) | 6/8       | 16 pts       | 12 pts   |
+| Semi-finals (×3pt)   | 2/4       | 12 pts       | 6 pts    |
+| Finalists (×5pt)     | 2/2       | 10 pts       | 10 pts   |
+| Winner (×10pt)       | ✗ predicted France (actual: Argentina) | 10 pts | 0 pts |
+| **Total BPS** | **—**          | **64 pts**   | **40/64 ✗ FAIL** |
 
 ### Key validation results
 
-- **Correctly predicted Argentina and France as finalists** — both teams had composite strength scores ≥ 0.82 pre-tournament.
+- **Correctly flagged both finalists (Argentina and France)** — both teams had composite strength scores ≥ 0.82 pre-tournament.
+- **Got the winner wrong** — modal champion was France; actual was Argentina. Argentina's tournament-form momentum (Copa América 2021 + 36-match unbeaten run) was underweighted relative to squad market value.
+- **Missed two quarter-finalists** (Brazil and Germany) — both overrated due to squad market value bias; Brazil eliminated by Croatia in QF (shootout), Germany failed to advance from groups.
 - **Morocco flagged as upset candidate** — the model assigned Morocco a 14.2% chance of reaching the semi-finals vs. a naive 3.1% base rate. The `upset_detector` module correctly identified Morocco's `giant_killer_index` of 0.71 (top 5 globally).
 - **Missed: Japan over Germany and Spain** — both upsets assigned ~8% probability each; correctly labelled as "danger games" by `upset_detector`, but simulation did not select them in modal path.
 - **Saudi Arabia over Argentina (group)** — assigned 9.3% probability, flagged as upset candidate.
+
+Failure analysis driving v2: see [world-cup-oracle-v2](https://github.com/fatehaszaman/world-cup-oracle-v2).
 
 ### Run backtest
 
 ```bash
 python examples/run_backtest.py
 # Output:
-# BPS: 53/64  ✓ PASS (threshold: 45/64)
+# BPS: 40/64  ✗ FAIL (threshold: 45/64)
 # Upset detection: 5/7 flagged correctly
 ```
 
@@ -354,6 +358,18 @@ python scripts/benchmark.py
 5. Submit a pull request
 
 Code style: `black` + `ruff`. Type hints required on all public functions.
+
+---
+
+## CHANGELOG
+
+### Engineering fixes (latest)
+- **Backtest score** corrected to **40/64 BPS** — FAIL (was incorrectly reported as 53/64 in earlier README revisions). The v2 README, the trials repo, and the actual `run_backtest.py` output all agree on 40/64. This failure is the reason `world-cup-oracle-v2` exists.
+- **Brazil FB starter** corrected from `Trent Alexander-Arnold` (copy-paste from England) to `Danilo` / `Guilherme Arana`. FB rating 91 → 84.
+- **Weight validation** now raises `ValueError` instead of using `assert` (asserts are stripped under `python -O` / `PYTHONOPTIMIZE=1`, which would silently allow invalid weights).
+- **`SponsorshipValuator`** is now constructed once on `TeamStrengthScorer.__init__` and cached, instead of being re-instantiated ~32 times per `score_all_teams()` call.
+- **Unknown-team fallback** unified across all sub-scorers via `config.UNKNOWN_TEAM_DEFAULT_SCORE = 0.40`. Previously squad_value→0.30, positional→0.55, historical→0.0.
+- **`HISTORICAL_RESULTS` list order** is now explicitly documented as oldest → newest (i.e. `[2006, 2010, 2014, 2018, 2022]`).
 
 ---
 
