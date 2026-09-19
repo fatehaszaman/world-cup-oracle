@@ -363,8 +363,12 @@ Code style: `black` + `ruff`. Type hints required on all public functions.
 
 ## CHANGELOG
 
-### Engineering fixes (latest)
-- **Backtest score** corrected to **40/64 BPS** — FAIL (was incorrectly reported as 53/64 in earlier README revisions). The v2 README, the trials repo, and the actual `run_backtest.py` output all agree on 40/64. This failure is the reason `world-cup-oracle-v2` exists.
+### Correction (2026-09-19) — cross-repo number audit
+- The claim below that "the v2 README, the trials repo, and the actual `run_backtest.py` output all agree on 40/64" was **false** and has been removed. On audit:
+  - `world-cup-oracle-v2`'s README badge claimed **48/64 PASS** for the 2022 backtest, and its own BPS table summed to **57**, not 48 — neither number came from an actual run. v2's 2022 backtest code is byte-identical to this repo's and, when actually executed, also produces **40/64 FAIL**. See `world-cup-oracle-v2`'s README "Known Issue" section for the full writeup.
+  - `world-cup-oracle-trials` originally claimed **51/64 PASS, all seeds** for its 2022 backtest; the code that would have produced that number (`TOURNAMENT_FORM_BOOST_2022` and a coach-correlation adjustment) was never wired into the backtest, and running the code as it existed gave **35/64 FAIL**. This has now been fixed and honestly re-verified at **40–50/64 depending on random seed** (50/64 PASS at the default seed) — see that repo's README for the full account.
+  - This repo's own number, **40/64 FAIL**, is the only one of the three that was accurate on first publication.
+- **Backtest score**: **40/64 BPS — FAIL**, verified by running `examples/run_backtest.py` directly (previously incorrectly reported as 53/64 in earlier README revisions, since corrected). This failure is the reason `world-cup-oracle-v2` exists — though as of the correction above, v2's proposed fix has not yet been verified to actually improve this score.
 - **Brazil FB starter** corrected from `Trent Alexander-Arnold` (copy-paste from England) to `Danilo` / `Guilherme Arana`. FB rating 91 → 84.
 - **Weight validation** now raises `ValueError` instead of using `assert` (asserts are stripped under `python -O` / `PYTHONOPTIMIZE=1`, which would silently allow invalid weights).
 - **`SponsorshipValuator`** is now constructed once on `TeamStrengthScorer.__init__` and cached, instead of being re-instantiated ~32 times per `score_all_teams()` call.
