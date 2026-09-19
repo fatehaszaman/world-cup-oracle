@@ -47,10 +47,20 @@ Previous versions are retained in Git history.
 
 ## Test and data limitations
 
-The legacy suite is not green: the 2026-09-19 audit on Python 3.14 recorded
-26 failures and 9 passes with `python -m pytest -q --continue-on-collection-errors`.
-Failures include obsolete API expectations and probability assertions.
+The full suite is not green: the 2026-09-19 follow-up on Python 3.14 recorded
+34 passes and 8 failures with `python -m pytest -q`. There are no collection
+errors or skipped tests. Imports, compilation, and all three script smoke
+checks pass. Remaining failures concern missing Qatar scorer inputs,
+Brazil's historical rank, and four unchanged probability hypotheses.
+See the [full audit and logs](https://github.com/fatehaszaman/world-cup-oracle-trials/blob/main/AUDIT.md).
+
+The generic engine's knockout completion, round labels, referee draw-mass
+handling, and examples have been repaired. `examples/run_prediction.py`
+now computes output rather than printing fabricated sample probabilities.
+It remains a synthetic 48-team scenario with only 24 knockout entrants and
+byes, not an official 2026 bracket. The separate historical replay above is
+unchanged by these generic-engine repairs.
 No claim of production readiness, current squad data, validated causal
 referee effects, or guaranteed forecast accuracy is made.
 
-Maintained by [fatehaszaman](https://github.com/fatehaszaman). License: MIT.
+Maintained by [fatehaszaman](https://github.com/fatehaszaman).
