@@ -1,5 +1,7 @@
 # World Cup Oracle: Original Baseline
 
+[Algorithm guide: pseudocode, time complexity, and memory](docs/ALGORITHM_GUIDE.md).
+
 An experimental football simulation project using team-strength heuristics
 and Monte Carlo tournament replays. This repository is the original baseline,
 not the location of the latest evaluation or referee changes.
