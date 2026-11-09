@@ -37,6 +37,10 @@ The full disclosure and reproducible comparison are in the
 [trials audit](https://github.com/fatehaszaman/world-cup-oracle-trials/blob/main/AUDIT.md).
 Previous versions are retained in Git history.
 
+## What I learned
+
+I published 2022 scores (48/64, and separately 51/64 on all seeds) before verifying them against executable runs. The reproducible 2022 result is 40/64. I withdrew the earlier claims publicly and kept them in Git history. Every figure in this README now comes from a scripted run, and replays are labeled as historical, not forecasting accuracy. See [LESSONS.md](https://github.com/fatehaszaman/world-cup-oracle-trials/blob/main/LESSONS.md) for the cause, the fix, and the commits.
+
 ## Repository roles
 
 - **This baseline:** 2022 BPS 40/64 at the settings above.
